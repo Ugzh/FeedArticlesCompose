@@ -102,12 +102,16 @@ fun RegisterScreen(navController: NavController, vm: RegisterViewModel){
         }
     }
 
-   /* LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = true) {
         vm.isRegisterSharedFlow.collect{
             if(it)
-                navController.navigate(Screen.Home.route)
+                navController.navigate(Screen.Home.route){
+                    popUpTo(Screen.Register.route){
+                        inclusive = true
+                    }
+                }
         }
-    }*/
+    }
     RegisterContent{ login, password, confirmPassword ->
         vm.registerUser(login, password, confirmPassword)
     }

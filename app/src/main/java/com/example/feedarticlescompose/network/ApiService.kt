@@ -1,7 +1,6 @@
 package com.example.feedarticlescompose.network
 
 import com.example.feedarticlescompose.network.dtos.article.ArticleDto
-import com.example.feedarticlescompose.network.dtos.article.GetAllArticlesResponseDto
 import com.example.feedarticlescompose.network.dtos.article.NewArticleDto
 import com.example.feedarticlescompose.network.dtos.article.UpdateArticleDto
 import com.example.feedarticlescompose.network.dtos.user.RegisterAndLoginResponseDto
@@ -32,9 +31,9 @@ interface ApiService {
     ): Response<RegisterAndLoginResponseDto>?
 
     @GET(ApiRoutes.ARTICLES)
-    fun getAllArticles(
+    suspend fun getAllArticles(
         @Header("token") token: String
-    ) : Response<GetAllArticlesResponseDto>?
+    ) : Response<List<ArticleDto>>?
 
     @GET(ApiRoutes.ARTICLES+"/{id}")
     suspend fun getArticle(

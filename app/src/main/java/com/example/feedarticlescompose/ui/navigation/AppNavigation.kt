@@ -5,6 +5,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.feedarticlescompose.ui.screen.home.HomeScreen
+import com.example.feedarticlescompose.ui.screen.home.HomeViewModel
 import com.example.feedarticlescompose.ui.screen.login.LoginScreen
 import com.example.feedarticlescompose.ui.screen.login.LoginViewModel
 import com.example.feedarticlescompose.ui.screen.register.RegisterScreen
@@ -25,7 +27,7 @@ fun AppNav(){
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = Screen.Home.route
     ){
         composable(Screen.Register.route) {
             val registerViewModel: RegisterViewModel = hiltViewModel()
@@ -34,6 +36,10 @@ fun AppNav(){
         composable(Screen.Login.route) {
             val loginViewModel: LoginViewModel = hiltViewModel()
             LoginScreen(navController, loginViewModel)
+        }
+        composable(Screen.Home.route) {
+            val homeViewModel: HomeViewModel = hiltViewModel()
+            HomeScreen(navController, homeViewModel)
         }
     }
 }
