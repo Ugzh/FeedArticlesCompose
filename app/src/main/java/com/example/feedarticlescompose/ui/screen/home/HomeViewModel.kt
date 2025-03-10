@@ -48,6 +48,8 @@ class HomeViewModel @Inject constructor(
     var triggerNavigationToEditSharedFlow =
         _triggerNavigationToEditSharedFlow.asSharedFlow()
 
+    var categorySelected = 0
+
 
 
 
@@ -77,7 +79,12 @@ class HomeViewModel @Inject constructor(
                         response.code() != 0 ->
                             when(response.code()){
                                 200 -> {
-                                    _articlesListStateFlow.value = body!!
+                                    if(categorySelected != 0){
+                                        _articlesListStateFlow.value = body!!.filter {
+                                          it.categorie == categorySelected
+                                        }
+                                    } else
+                                        _articlesListStateFlow.value = body!!
                                     _articles.addAll(body)
                                 }
                                 400 ,401 -> {
@@ -98,8 +105,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun filteredList(idCategory: Int){
+    fun filteredList(idCategory: Int, articleList: List<ArticleDto> = emptyList()){
         val cat = CategoryUtils.getCategoryIdString(idCategory)
+        categorySelected = cat
         _articlesListStateFlow.value =
             if(cat != 0)
                 _articles.filter {

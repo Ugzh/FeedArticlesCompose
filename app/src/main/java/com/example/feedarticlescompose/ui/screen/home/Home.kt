@@ -28,9 +28,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.PowerSettingsNew
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -81,10 +84,12 @@ fun HomePreview(){
         logoutNav = {},
         1,
         getIdArticleOnItemClicked = {_, ->},
+        refreshList = {},
         getCategoryClicked = {_->}
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
     listOfArticles: List<ArticleDto> = emptyList(),
@@ -92,11 +97,14 @@ fun HomeContent(
     logoutNav: () -> Unit,
     userId: Long,
     getCategoryClicked : (Int) -> Unit,
+    refreshList: () -> Unit,
     getIdArticleOnItemClicked: (Long) -> Unit
 ){
     val context = LocalContext.current
     val radioListOptions = listOf(R.string.all, R.string.sport, R.string.manga, R.string.various)
-    var idSelect = R.string.all
+    var isRefreshing by remember {
+        mutableStateOf(false)
+    }
     
     Box(
         modifier = Modifier
@@ -129,59 +137,64 @@ fun HomeContent(
            }
            Spacer(modifier = Modifier.size(10.dp))
            Column(
-               horizontalAlignment = Alignment.CenterHorizontally
+               horizontalAlignment = Alignment.CenterHorizontally,
            ) {
-               LazyColumn(
-                   modifier = Modifier
-                       .weight(1f)
+               PullToRefreshBox(
+                   isRefreshing = isRefreshing,
+                   onRefresh = {
+                       refreshList()
+                   },
+                   modifier = Modifier.weight(1f)
                ) {
-                   items(items = listOfArticles){
-                       Row(
-                           verticalAlignment = Alignment.CenterVertically,
-                           modifier = Modifier
-                               .padding(vertical = 5.dp)
-                               .clickable {
-                                   if (it.idU == userId)
-                                       getIdArticleOnItemClicked(it.id)
-                               }
-                               .border(
-                                   BorderStroke(1.dp, Color.Black),
-                                   shape = RoundedCornerShape(10.dp)
-                               )
-                               .background(
-                                   CategoryUtils.getColor(it.categorie),
-                                   shape = RoundedCornerShape(10.dp)
-                               )
-                               .fillMaxWidth()
-                               .padding(10.dp)
-
-                       ) {
-                           AsyncImage(
-                               model = it.urlImage,
-                               contentDescription = it.titre,
-                               contentScale = ContentScale.FillHeight,
-                               error = painterResource(id = R.drawable.feedarticles_logo),
+                   LazyColumn(
+                       modifier = Modifier
+                   ) {
+                       items(items = listOfArticles){
+                           Row(
+                               verticalAlignment = Alignment.CenterVertically,
                                modifier = Modifier
-                                   .size(50.dp)
-                                   .clip(CircleShape)
+                                   .padding(vertical = 5.dp)
+                                   .clickable {
+                                       if (it.idU == userId)
+                                           getIdArticleOnItemClicked(it.id)
+                                   }
                                    .border(
-                                       BorderStroke(1.dp, Color.Gray),
-                                       CircleShape
+                                       BorderStroke(1.dp, Color.Black),
+                                       shape = RoundedCornerShape(10.dp)
                                    )
-                           )
-                           Text(
-                               text = it.titre,
-                               maxLines = 2,
-                               overflow = TextOverflow.Ellipsis,
-                               modifier = Modifier.padding(10.dp)
-                           )
+                                   .background(
+                                       CategoryUtils.getColor(it.categorie),
+                                       shape = RoundedCornerShape(10.dp)
+                                   )
+                                   .fillMaxWidth()
+                                   .padding(10.dp)
+
+                           ) {
+                               AsyncImage(
+                                   model = it.urlImage,
+                                   contentDescription = it.titre,
+                                   contentScale = ContentScale.FillHeight,
+                                   error = painterResource(id = R.drawable.feedarticles_logo),
+                                   modifier = Modifier
+                                       .size(50.dp)
+                                       .clip(CircleShape)
+                                       .border(
+                                           BorderStroke(1.dp, Color.Gray),
+                                           CircleShape
+                                       )
+                               )
+                               Text(
+                                   text = it.titre,
+                                   maxLines = 2,
+                                   overflow = TextOverflow.Ellipsis,
+                                   modifier = Modifier.padding(10.dp)
+                               )
+                           }
                        }
                    }
                }
-               CategoryContent(radioListOptions, defaultValue = idSelect){
+               CategoryContent(radioListOptions, defaultValue = R.string.all){
                    getCategoryClicked(it)
-                   Log.d("click", it.toString())
-                   //idSelect = it
                }
            }
        }
@@ -225,7 +238,6 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel){
     }
 
 
-
     HomeContent(
         listOfArticles = listOfArticles,
         goToAddArticleNav = {
@@ -241,6 +253,9 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel){
         getIdArticleOnItemClicked = {
             idArticle = it
             vm.setNavigationToEdit()
+        },
+        refreshList = {
+            vm.getAllArticles()
         }
     )
 
