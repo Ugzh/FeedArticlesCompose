@@ -64,9 +64,7 @@ fun AppNav(){
                 type = NavType.LongType
             })
         ) {
-            Log.d("ici", "ici")
             it.arguments?.getLong("idArticle")?.let {idArticle ->
-                 Log.d("ici", idArticle.toString())
                 val editArticleViewModel: EditArticleViewModel = hiltViewModel()
                 EditArticleScreen(navController, editArticleViewModel, idArticle)
             }

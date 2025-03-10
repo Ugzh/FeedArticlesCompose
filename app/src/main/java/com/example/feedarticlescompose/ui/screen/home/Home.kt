@@ -32,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -79,7 +80,8 @@ fun HomePreview(){
         goToAddArticleNav = {},
         logoutNav = {},
         1,
-        getIdArticleOnItemClicked = {_, ->}
+        getIdArticleOnItemClicked = {_, ->},
+        getCategoryClicked = {_->}
     )
 }
 
@@ -89,6 +91,7 @@ fun HomeContent(
     goToAddArticleNav: () -> Unit,
     logoutNav: () -> Unit,
     userId: Long,
+    getCategoryClicked : (Int) -> Unit,
     getIdArticleOnItemClicked: (Long) -> Unit
 ){
     val context = LocalContext.current
@@ -176,7 +179,9 @@ fun HomeContent(
                    }
                }
                CategoryContent(radioListOptions, defaultValue = idSelect){
-                   idSelect = it
+                   getCategoryClicked(it)
+                   Log.d("click", it.toString())
+                   //idSelect = it
                }
            }
        }
@@ -191,6 +196,9 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel){
         mutableLongStateOf(0L)
     }
 
+    LaunchedEffect(key1 = true) {
+        vm.getAllArticles()
+    }
 
     LaunchedEffect(key1 = true) {
         vm.triggerNavigationToRegisterSharedFlow.collect{
@@ -226,7 +234,10 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel){
         logoutNav = {
             vm.disconnectUser()
         },
-        vm.getUserId(),
+        getCategoryClicked = {
+            vm.filteredList(it)
+        },
+        userId = vm.getUserId(),
         getIdArticleOnItemClicked = {
             idArticle = it
             vm.setNavigationToEdit()

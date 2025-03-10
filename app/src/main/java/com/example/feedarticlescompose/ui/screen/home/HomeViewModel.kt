@@ -1,5 +1,6 @@
 package com.example.feedarticlescompose.ui.screen.home
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,6 +10,7 @@ import com.example.feedarticlescompose.R
 import com.example.feedarticlescompose.network.ApiService
 import com.example.feedarticlescompose.network.MyPrefs
 import com.example.feedarticlescompose.network.dtos.article.ArticleDto
+import com.example.feedarticlescompose.utils.CategoryUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -26,6 +28,7 @@ class HomeViewModel @Inject constructor(
     private val db: ApiService
 ): ViewModel() {
 
+    private var _articles = arrayListOf<ArticleDto>()//<List<ArticleDto>>()
     private var _articlesListStateFlow = MutableStateFlow<List<ArticleDto>>(emptyList())
     val articlesListStateFlow = _articlesListStateFlow.asStateFlow()
 
@@ -73,7 +76,10 @@ class HomeViewModel @Inject constructor(
                             _userMessageSharedFlow.emit(R.string.no_response_database)
                         response.code() != 0 ->
                             when(response.code()){
-                                200 -> _articlesListStateFlow.value = body!!
+                                200 -> {
+                                    _articlesListStateFlow.value = body!!
+                                    _articles.addAll(body)
+                                }
                                 400 ,401 -> {
                                     disconnectUser()
                                     _userMessageSharedFlow
@@ -92,6 +98,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun filteredList(idCategory: Int){
+        val cat = CategoryUtils.getCategoryIdString(idCategory)
+        _articlesListStateFlow.value =
+            if(cat != 0)
+                _articles.filter {
+                it.categorie == cat
+                }
+            else _articles
+    }
     fun getUserId(): Long{
         return myPrefs.userId
     }
