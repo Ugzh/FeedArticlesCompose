@@ -108,6 +108,17 @@ fun LoginScreen(navController: NavController, vm: LoginViewModel){
         }
     }
 
+    LaunchedEffect(key1 = true) {
+        vm.isLoggedSharedFlow.collect{
+            if(it)
+                navController.navigate(Screen.Home.route){
+                    popUpTo(Screen.Login.route){
+                        inclusive = true
+                    }
+                }
+        }
+    }
+
     LoginContent(goToRegisterScreen = {
         navController.navigate(Screen.Register.route)
     }) { login, password ->

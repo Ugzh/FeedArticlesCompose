@@ -33,7 +33,7 @@ fun EditTextCustomPreview(){
 @Composable
 fun EditTextCustom(
     value: String,
-    label: String,
+    label: String = "",
     modifier: Modifier = Modifier,
     keyboardType: KeyboardType = KeyboardType.Text,
     isPasswordField: Boolean = false,

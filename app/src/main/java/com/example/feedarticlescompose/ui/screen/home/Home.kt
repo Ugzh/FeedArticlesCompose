@@ -2,10 +2,12 @@ package com.example.feedarticlescompose.ui.screen.home
 
 import android.content.ClipData.Item
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,9 +32,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -52,8 +56,12 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.ImagePainter
 import com.example.feedarticlescompose.R
+import com.example.feedarticlescompose.network.MyPrefs
 import com.example.feedarticlescompose.network.dtos.article.ArticleDto
+import com.example.feedarticlescompose.ui.navigation.Screen
 import com.example.feedarticlescompose.ui.sharedComponents.CategoryContent
+import com.example.feedarticlescompose.utils.CategoryUtils
+import javax.inject.Inject
 
 @Preview(showBackground = true)
 @Composable
@@ -67,15 +75,25 @@ fun HomePreview(){
                 1,
                 "x",
                 1)
-        )
+        ),
+        goToAddArticleNav = {},
+        logoutNav = {},
+        1,
+        getIdArticleOnItemClicked = {_, ->}
     )
 }
 
 @Composable
-fun HomeContent(listOfArticles: List<ArticleDto> = emptyList()){
+fun HomeContent(
+    listOfArticles: List<ArticleDto> = emptyList(),
+    goToAddArticleNav: () -> Unit,
+    logoutNav: () -> Unit,
+    userId: Long,
+    getIdArticleOnItemClicked: (Long) -> Unit
+){
     val context = LocalContext.current
     val radioListOptions = listOf(R.string.all, R.string.sport, R.string.manga, R.string.various)
-    var idSelect = 0
+    var idSelect = R.string.all
     
     Box(
         modifier = Modifier
@@ -89,12 +107,21 @@ fun HomeContent(listOfArticles: List<ArticleDto> = emptyList()){
            ) {
                Icon(
                    imageVector = Icons.Rounded.Add,
-                   contentDescription = context.getString(R.string.add)
+                   contentDescription = context.getString(R.string.add),
+                   modifier = Modifier
+                       .size(35.dp)
+                       .clickable {
+                           goToAddArticleNav()
+                       }
                )
                Icon(
                    imageVector = Icons.Rounded.PowerSettingsNew,
-                   tint = Color.Gray,
-                   contentDescription = context.getString(R.string.add)
+                   contentDescription = context.getString(R.string.add),
+                   modifier = Modifier
+                       .size(35.dp)
+                       .clickable {
+                           logoutNav()
+                       }
                )
            }
            Spacer(modifier = Modifier.size(10.dp))
@@ -110,16 +137,21 @@ fun HomeContent(listOfArticles: List<ArticleDto> = emptyList()){
                            verticalAlignment = Alignment.CenterVertically,
                            modifier = Modifier
                                .padding(vertical = 5.dp)
+                               .clickable {
+                                   if (it.idU == userId)
+                                       getIdArticleOnItemClicked(it.id)
+                               }
                                .border(
                                    BorderStroke(1.dp, Color.Black),
                                    shape = RoundedCornerShape(10.dp)
                                )
                                .background(
-                                   getColor(it.categorie),
+                                   CategoryUtils.getColor(it.categorie),
                                    shape = RoundedCornerShape(10.dp)
                                )
                                .fillMaxWidth()
                                .padding(10.dp)
+
                        ) {
                            AsyncImage(
                                model = it.urlImage,
@@ -143,8 +175,8 @@ fun HomeContent(listOfArticles: List<ArticleDto> = emptyList()){
                        }
                    }
                }
-               CategoryContent(radioListOptions){
-                    idSelect = it
+               CategoryContent(radioListOptions, defaultValue = idSelect){
+                   idSelect = it
                }
            }
        }
@@ -155,14 +187,50 @@ fun HomeContent(listOfArticles: List<ArticleDto> = emptyList()){
 fun HomeScreen(navController: NavController, vm: HomeViewModel){
     val context = LocalContext.current
     val listOfArticles by vm.articlesListStateFlow.collectAsState()
-    HomeContent(listOfArticles = listOfArticles)
-}
-
-private fun getColor(cat: Int): Color{
-    return when(cat){
-        1 -> Color.Yellow
-        2 -> Color.Cyan
-        3 -> Color.Green
-        else -> Color.Transparent
+    var idArticle by remember {
+        mutableLongStateOf(0L)
     }
+
+
+    LaunchedEffect(key1 = true) {
+        vm.triggerNavigationToRegisterSharedFlow.collect{
+            if(it)
+                navController.navigate(Screen.Login.route){
+                    popUpTo(Screen.Home.route){
+                        inclusive = true
+                    }
+                }
+        }
+    }
+
+    LaunchedEffect(key1 = true) {
+        vm.triggerNavigationToEditSharedFlow.collect{
+            if(it)
+                navController.navigate(Screen.Edit.route+"/$idArticle")
+        }
+    }
+
+    LaunchedEffect(key1 = true) {
+        vm.userMessageSharedFlow.collect{
+            Toast.makeText(context, context.getString(it), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
+    HomeContent(
+        listOfArticles = listOfArticles,
+        goToAddArticleNav = {
+            navController.navigate(Screen.Create.route)
+        },
+        logoutNav = {
+            vm.disconnectUser()
+        },
+        vm.getUserId(),
+        getIdArticleOnItemClicked = {
+            idArticle = it
+            vm.setNavigationToEdit()
+        }
+    )
+
 }

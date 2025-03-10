@@ -35,28 +35,28 @@ interface ApiService {
         @Header("token") token: String
     ) : Response<List<ArticleDto>>?
 
-    @GET(ApiRoutes.ARTICLES+"/{id}")
+    @GET(ApiRoutes.ARTICLES+"{id}")
     suspend fun getArticle(
         @Path("id") idArticle: Long,
         @Header("token") token: String
-    ): Response<ArticleDto>
+    ): Response<ArticleDto>?
 
     @POST(ApiRoutes.ARTICLES+"/{id}")
-    suspend fun udpateArticle(
+    suspend fun updateArticle(
         @Path("id") idArticle: Long,
         @Header("token") token: String,
         @Body updateArticleDto: UpdateArticleDto
-    )
+    ): Response<Unit>?
 
     @DELETE(ApiRoutes.ARTICLES+"/id")
     suspend fun deleteArticle(
         @Path("id") idArticle: Long,
         @Header("token") token: String,
-    )
+    ): Response<Unit>?
 
     @PUT(ApiRoutes.ARTICLES)
     suspend fun createArticle(
         @Header("token") token: String,
         @Body newArticleDto: NewArticleDto
-    )
+    ): Response<Unit>?
 }

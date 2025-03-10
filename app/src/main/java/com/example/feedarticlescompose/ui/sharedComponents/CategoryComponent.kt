@@ -20,23 +20,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.feedarticlescompose.R
 
 @Preview(showBackground = true)
 @Composable
 fun CategoryPreview(){
-    CategoryContent(){_ ->
+    val radioListOptions = listOf(R.string.all, R.string.sport, R.string.manga, R.string.various)
+    CategoryContent(radioOptions = radioListOptions, defaultValue = R.string.all){_ ->
     }
 }
 
 @Composable
 fun CategoryContent(
     radioOptions: List<Int> = emptyList(),
+    defaultValue: Int = 0,
     getIdSelected: (Int) ->Unit
 ){
     val context = LocalContext.current
 
     var selectedOption by remember{
-        mutableIntStateOf(radioOptions[0])
+        mutableIntStateOf(defaultValue)
     }
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,

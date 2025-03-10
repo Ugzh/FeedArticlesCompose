@@ -29,13 +29,23 @@ class HomeViewModel @Inject constructor(
     private var _articlesListStateFlow = MutableStateFlow<List<ArticleDto>>(emptyList())
     val articlesListStateFlow = _articlesListStateFlow.asStateFlow()
 
+    private var _idArticleStateFlow = MutableStateFlow<Long>(0)
+    val idArticleStateFlow = _idArticleStateFlow.asStateFlow()
+
 
     private var _userMessageSharedFlow = MutableSharedFlow<Int>()
     var userMessageSharedFlow = _userMessageSharedFlow.asSharedFlow()
 
 
-    private var _isLogoutSharedFlow = MutableSharedFlow<Boolean>()
-    var isLogoutSharedFlow = _isLogoutSharedFlow.asSharedFlow()
+    private var _triggerNavigationToRegisterSharedFlow = MutableSharedFlow<Boolean>()
+    var triggerNavigationToRegisterSharedFlow =
+        _triggerNavigationToRegisterSharedFlow.asSharedFlow()
+
+    private var _triggerNavigationToEditSharedFlow = MutableSharedFlow<Boolean>()
+    var triggerNavigationToEditSharedFlow =
+        _triggerNavigationToEditSharedFlow.asSharedFlow()
+
+
 
 
     init {
@@ -45,7 +55,7 @@ class HomeViewModel @Inject constructor(
         myPrefs.token = null
         myPrefs.userId = 0
         viewModelScope.launch {
-            _isLogoutSharedFlow.emit(true)
+            _triggerNavigationToRegisterSharedFlow.emit(true)
         }
     }
     fun getAllArticles(){
@@ -75,10 +85,20 @@ class HomeViewModel @Inject constructor(
                     }
                 }catch (ce: ConnectException){
                     viewModelScope.launch {
-                        _userMessageSharedFlow.emit(R.string.password_not_match)
+                        _userMessageSharedFlow.emit(R.string.error_from_database)
                     }
                 }
             }
+        }
+    }
+
+    fun getUserId(): Long{
+        return myPrefs.userId
+    }
+
+    fun setNavigationToEdit(){
+        viewModelScope.launch {
+            _triggerNavigationToEditSharedFlow.emit(true)
         }
     }
 
