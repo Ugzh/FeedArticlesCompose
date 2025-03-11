@@ -26,14 +26,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.PowerSettingsNew
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -64,6 +68,7 @@ import com.example.feedarticlescompose.network.MyPrefs
 import com.example.feedarticlescompose.network.dtos.article.ArticleDto
 import com.example.feedarticlescompose.ui.navigation.Screen
 import com.example.feedarticlescompose.ui.sharedComponents.CategoryContent
+import com.example.feedarticlescompose.ui.sharedComponents.DeleteDissmissBoxComponent
 import com.example.feedarticlescompose.utils.CategoryUtils
 import javax.inject.Inject
 
@@ -84,6 +89,7 @@ fun HomePreview(){
         logoutNav = {},
         1,
         getIdArticleOnItemClicked = {_, ->},
+        onDelete = {_->},
         refreshList = {},
         getCategoryClicked = {_->}
     )
@@ -98,14 +104,15 @@ fun HomeContent(
     userId: Long,
     getCategoryClicked : (Int) -> Unit,
     refreshList: () -> Unit,
+    onDelete: (Long) -> Unit,
     getIdArticleOnItemClicked: (Long) -> Unit
 ){
     val context = LocalContext.current
     val radioListOptions = listOf(R.string.all, R.string.sport, R.string.manga, R.string.various)
-    var isRefreshing by remember {
+    val isRefreshing by remember {
         mutableStateOf(false)
     }
-    
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -150,46 +157,89 @@ fun HomeContent(
                        modifier = Modifier
                    ) {
                        items(items = listOfArticles){
-                           Row(
-                               verticalAlignment = Alignment.CenterVertically,
-                               modifier = Modifier
-                                   .padding(vertical = 5.dp)
-                                   .clickable {
-                                       if (it.idU == userId)
-                                           getIdArticleOnItemClicked(it.id)
+                           if (it.idU == userId)
+                               DeleteDissmissBoxComponent(
+                                   {
+                                       onDelete(it.id)
                                    }
-                                   .border(
-                                       BorderStroke(1.dp, Color.Black),
-                                       shape = RoundedCornerShape(10.dp)
-                                   )
-                                   .background(
-                                       CategoryUtils.getColor(it.categorie),
-                                       shape = RoundedCornerShape(10.dp)
-                                   )
-                                   .fillMaxWidth()
-                                   .padding(10.dp)
+                               ) {
+                                   Row(
+                                       verticalAlignment = Alignment.CenterVertically,
+                                       modifier = Modifier
+                                           .padding(vertical = 5.dp)
+                                           .clickable {
+                                               getIdArticleOnItemClicked(it.id)
+                                           }
+                                           .border(
+                                               BorderStroke(1.dp, Color.Black),
+                                               shape = RoundedCornerShape(10.dp)
+                                           )
+                                           .background(
+                                               CategoryUtils.getColor(it.categorie),
+                                               shape = RoundedCornerShape(10.dp)
+                                           )
+                                           .fillMaxWidth()
+                                           .padding(10.dp)
 
-                           ) {
-                               AsyncImage(
-                                   model = it.urlImage,
-                                   contentDescription = it.titre,
-                                   contentScale = ContentScale.FillHeight,
-                                   error = painterResource(id = R.drawable.feedarticles_logo),
-                                   modifier = Modifier
-                                       .size(50.dp)
-                                       .clip(CircleShape)
-                                       .border(
-                                           BorderStroke(1.dp, Color.Gray),
-                                           CircleShape
+                                   ) {
+                                       AsyncImage(
+                                           model = it.urlImage,
+                                           contentDescription = it.titre,
+                                           contentScale = ContentScale.FillHeight,
+                                           error = painterResource(id = R.drawable.feedarticles_logo),
+                                           modifier = Modifier
+                                               .size(50.dp)
+                                               .clip(CircleShape)
+                                               .border(
+                                                   BorderStroke(1.dp, Color.Gray),
+                                                   CircleShape
+                                               )
                                        )
-                               )
-                               Text(
-                                   text = it.titre,
-                                   maxLines = 2,
-                                   overflow = TextOverflow.Ellipsis,
-                                   modifier = Modifier.padding(10.dp)
-                               )
-                           }
+                                       Text(
+                                           text = it.titre,
+                                           maxLines = 2,
+                                           overflow = TextOverflow.Ellipsis,
+                                           modifier = Modifier.padding(10.dp)
+                                       )
+                                   }
+                               }
+                           else
+                               Row(
+                                   verticalAlignment = Alignment.CenterVertically,
+                                   modifier = Modifier
+                                       .padding(vertical = 5.dp)
+                                       .border(
+                                           BorderStroke(1.dp, Color.Black),
+                                           shape = RoundedCornerShape(10.dp)
+                                       )
+                                       .background(
+                                           CategoryUtils.getColor(it.categorie),
+                                           shape = RoundedCornerShape(10.dp)
+                                       )
+                                       .fillMaxWidth()
+                                       .padding(10.dp)
+
+                               ) {
+                                   AsyncImage(
+                                       model = it.urlImage,
+                                       contentDescription = it.titre,
+                                       contentScale = ContentScale.FillHeight,
+                                       error = painterResource(id = R.drawable.feedarticles_logo),
+                                       modifier = Modifier
+                                           .size(50.dp)
+                                           .clip(CircleShape)
+                                           .border(
+                                               BorderStroke(1.dp, Color.Gray),
+                                               CircleShape
+                                           )
+                                   )
+                                   Text(
+                                       text = it.titre,
+                                       maxLines = 2,
+                                       overflow = TextOverflow.Ellipsis,
+                                       modifier = Modifier.padding(10.dp)
+                                   )
+                               }
                        }
                    }
                }
@@ -256,7 +306,8 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel){
         },
         refreshList = {
             vm.getAllArticles()
-        }
+        },
+        onDelete = {vm.deleteArticle(it)}
     )
 
 }

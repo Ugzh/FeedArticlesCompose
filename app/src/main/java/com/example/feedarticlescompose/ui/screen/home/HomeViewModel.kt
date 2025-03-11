@@ -105,13 +105,13 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun filteredList(idCategory: Int, articleList: List<ArticleDto> = emptyList()){
+    fun filteredList(idCategory: Int){
         val cat = CategoryUtils.getCategoryIdString(idCategory)
         categorySelected = cat
         _articlesListStateFlow.value =
             if(cat != 0)
                 _articles.filter {
-                it.categorie == cat
+                    it.categorie == cat
                 }
             else _articles
     }
@@ -124,17 +124,37 @@ class HomeViewModel @Inject constructor(
             _triggerNavigationToEditSharedFlow.emit(true)
         }
     }
+    fun deleteArticle(idArticle: Long){
+        try {
+            viewModelScope.launch{
+                val response = withContext(Dispatchers.IO){
+                    db.deleteArticle(idArticle, myPrefs.token!!)
+                }
 
-
-    /*fun setFilter(idButton: Int){
-        numCat = when(idButton){
-            R.id.rb_home_sport -> 1
-            R.id.rb_home_manga -> 2
-            R.id.rb_home_various -> 3
-            else -> 0
+                when{
+                    response == null -> _userMessageSharedFlow.emit(R.string.no_response_database)
+                    response.code() != 0 ->
+                        when(response.code()){
+                            201 -> {
+                                _userMessageSharedFlow.emit(R.string.article_deleted)
+                                getAllArticles()
+                            }
+                            304 -> _userMessageSharedFlow.emit(R.string.article_not_deleted)
+                            400 ,401 -> {
+                                disconnectUser()
+                                _userMessageSharedFlow
+                                    .emit(R.string.error_from_database_redirection)
+                            }
+                            503 -> _userMessageSharedFlow.emit(R.string.no_response_database)
+                            else -> return@launch
+                        }
+                }
+            }
+        } catch (ce: ConnectException){
+            viewModelScope.launch {
+                _userMessageSharedFlow.emit(R.string.error_from_database)
+            }
         }
-        getAllArticles()
-    }*/
-
+    }
 
 }

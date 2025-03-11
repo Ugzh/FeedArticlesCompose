@@ -48,7 +48,7 @@ interface ApiService {
         @Body updateArticleDto: UpdateArticleDto
     ): Response<Unit>?
 
-    @DELETE(ApiRoutes.ARTICLES+"/id")
+    @DELETE(ApiRoutes.ARTICLES+"{id}")
     suspend fun deleteArticle(
         @Path("id") idArticle: Long,
         @Header("token") token: String,
