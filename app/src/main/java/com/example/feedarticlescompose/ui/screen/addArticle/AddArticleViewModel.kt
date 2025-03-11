@@ -26,10 +26,17 @@ class AddArticleViewModel @Inject constructor(
     var userMessageSharedFlow = _userMessageSharedFlow.asSharedFlow()
 
 
-    private var _triggerNavigationToHomeSharedFlow = MutableSharedFlow<Boolean>()
-    var triggerNavigationToHomeSharedFlow = _triggerNavigationToHomeSharedFlow.asSharedFlow()
+    private var _triggerNavigationToHomeSharedFlow =
+        MutableSharedFlow<Boolean>()
+    var triggerNavigationToHomeSharedFlow =
+        _triggerNavigationToHomeSharedFlow.asSharedFlow()
 
-    fun createArticle(title: String, desc: String, image: String, idButton: Int){
+    fun createArticle(
+        title: String,
+        desc: String,
+        image: String,
+        idButton: Int
+    ){
         val trimTitle = title.trim()
         val trimDesc = desc.trim()
         val trimImage = image.trim()
@@ -39,14 +46,21 @@ class AddArticleViewModel @Inject constructor(
             trimTitle.isNotEmpty()
             && trimDesc.isNotEmpty()
             && trimImage.isNotEmpty()
-            && cat != 0)
+            && cat != 0
+            )
         {
             viewModelScope.launch {
                 try {
                     val response = withContext(Dispatchers.IO){
                         db.createArticle(
                             myPrefs.token!!,
-                            NewArticleDto(myPrefs.userId,trimTitle,trimDesc,trimImage,cat)
+                            NewArticleDto(
+                                myPrefs.userId,
+                                trimTitle,
+                                trimDesc,
+                                trimImage,
+                                cat
+                            )
                         )
                     }
 

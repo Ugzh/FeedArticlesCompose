@@ -28,13 +28,10 @@ class HomeViewModel @Inject constructor(
     private val db: ApiService
 ): ViewModel() {
 
-    private var _articles = arrayListOf<ArticleDto>()//<List<ArticleDto>>()
+    private var _articles = arrayListOf<ArticleDto>()
+
     private var _articlesListStateFlow = MutableStateFlow<List<ArticleDto>>(emptyList())
     val articlesListStateFlow = _articlesListStateFlow.asStateFlow()
-
-    private var _idArticleStateFlow = MutableStateFlow<Long>(0)
-    val idArticleStateFlow = _idArticleStateFlow.asStateFlow()
-
 
     private var _userMessageSharedFlow = MutableSharedFlow<Int>()
     var userMessageSharedFlow = _userMessageSharedFlow.asSharedFlow()
@@ -48,10 +45,7 @@ class HomeViewModel @Inject constructor(
     var triggerNavigationToEditSharedFlow =
         _triggerNavigationToEditSharedFlow.asSharedFlow()
 
-    var categorySelected = 0
-
-
-
+    private var categorySelected = 0
 
     init {
         getAllArticles()
@@ -80,7 +74,6 @@ class HomeViewModel @Inject constructor(
                             when(response.code()){
                                 200 -> {
                                     if(categorySelected != 0){
-
                                         _articlesListStateFlow.value = body!!.filter {
                                           it.categorie == categorySelected
                                         }
@@ -89,7 +82,7 @@ class HomeViewModel @Inject constructor(
                                     }
                                     _articles.addAll(body)
                                 }
-                                400 ,401 -> {
+                                400, 401 -> {
                                     disconnectUser()
                                     _userMessageSharedFlow
                                         .emit(R.string.error_from_database_redirection)
@@ -98,7 +91,7 @@ class HomeViewModel @Inject constructor(
                                 else -> return@launch
                             }
                     }
-                }catch (ce: ConnectException){
+                } catch (ce: ConnectException){
                     viewModelScope.launch {
                         _userMessageSharedFlow.emit(R.string.error_from_database)
                     }

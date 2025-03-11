@@ -25,8 +25,8 @@ class LoginViewModel @Inject constructor(
     var userMessageSharedFlow = _userMessageSharedFlow.asSharedFlow()
 
 
-    private var _isLoggedSharedFlow = MutableSharedFlow<Boolean>()
-    var isLoggedSharedFlow = _isLoggedSharedFlow.asSharedFlow()
+    private var _triggerNavigationToHome = MutableSharedFlow<Boolean>()
+    var triggerNavigationToHome = _triggerNavigationToHome.asSharedFlow()
 
     fun logUser(login: String, password: String) {
         val trimLogin = login.trim()
@@ -49,14 +49,16 @@ class LoginViewModel @Inject constructor(
                                 200 -> {
                                     myPrefs.token = body!!.token
                                     myPrefs.userId = body.id
-                                    _isLoggedSharedFlow.emit(true)
-                                    R.string.account_created
+                                    _triggerNavigationToHome.emit(true)
+                                    R.string.login
                                 }
                                 304 -> R.string.internal_problem
                                 400 -> R.string.check_all_fields
                                 401 -> R.string.wrong_informations
                                 503 -> R.string.error_from_database
                                 else -> return@launch
+                            }.let {
+                                _userMessageSharedFlow.emit(it)
                             }
                     }
                 } catch (ce: ConnectException){

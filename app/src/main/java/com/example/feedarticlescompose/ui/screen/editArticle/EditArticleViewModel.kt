@@ -30,8 +30,10 @@ class EditArticleViewModel @Inject constructor(
     var userMessageSharedFlow = _userMessageSharedFlow.asSharedFlow()
 
 
-    private var _triggerNavigationToHomeSharedFlow = MutableSharedFlow<Boolean>()
-    var triggerNavigationToHomeSharedFlow = _triggerNavigationToHomeSharedFlow.asSharedFlow()
+    private var _triggerNavigationToHomeSharedFlow =
+        MutableSharedFlow<Boolean>()
+    var triggerNavigationToHomeSharedFlow =
+        _triggerNavigationToHomeSharedFlow.asSharedFlow()
 
     private var _articleStateFlow = MutableStateFlow<ArticleDto?>(null)
     val articleStateFlow = _articleStateFlow.asStateFlow()
@@ -90,7 +92,13 @@ class EditArticleViewModel @Inject constructor(
                     val response = withContext(Dispatchers.IO) {
                         db.updateArticle(
                             _articleStateFlow.value!!.id, myPrefs.token!!,
-                            UpdateArticleDto(_articleStateFlow.value!!.id, trimTitle, trimDesc, trimImage, cat)
+                            UpdateArticleDto(
+                                _articleStateFlow.value!!.id,
+                                trimTitle,
+                                trimDesc,
+                                trimImage,
+                                cat
+                            )
                         )
                     }
 

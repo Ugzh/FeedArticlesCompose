@@ -57,7 +57,9 @@ fun ArticleItemExpandedContent(article: ArticleDto){
         mutableStateOf(false)
     }
     val sizeImage = if(isExpended) 70.dp else 50.dp
-    var articleChanged by remember { mutableStateOf(false) }
+    var articleChanged by remember {
+        mutableStateOf(false)
+    }
 
     LaunchedEffect(article.id) {
         articleChanged = true
@@ -91,7 +93,7 @@ fun ArticleItemExpandedContent(article: ArticleDto){
                     contentDescription = article.titre,
                     contentScale = ContentScale.FillHeight,
                     error = painterResource(id = R.drawable.feedarticles_logo),
-                    modifier = androidx.compose.ui.Modifier
+                    modifier = Modifier
                         .size(sizeImage)
                         .clip(CircleShape)
                         .border(
@@ -166,13 +168,7 @@ fun ArticleItemWhenAuthorContent(
     onDelete: (Long) -> Unit,
     getIdArticleOnItemClicked: (Long) -> Unit
 ){
-    val context = LocalContext.current
-
-    DeleteDismissBoxComponent(
-        {
-            onDelete(article.id)
-        }
-    ) {
+    DeleteDismissBoxComponent({ onDelete(article.id)}) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier

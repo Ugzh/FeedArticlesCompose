@@ -119,7 +119,7 @@ fun LoginScreen(navController: NavController, vm: LoginViewModel){
     }
 
     LaunchedEffect(key1 = true) {
-        vm.isLoggedSharedFlow.collect{
+        vm.triggerNavigationToHome.collect{
             if(it)
                 navController.navigate(Screen.Home.route){
                     popUpTo(Screen.Login.route){
@@ -129,9 +129,11 @@ fun LoginScreen(navController: NavController, vm: LoginViewModel){
         }
     }
 
-    LoginContent(goToRegisterScreen = {
-        navController.navigate(Screen.Register.route)
-    }) { login, password ->
+    LoginContent(
+        goToRegisterScreen = {
+            navController.navigate(Screen.Register.route)
+        }
+    ) { login, password ->
         vm.logUser(login,password)
     }
 }

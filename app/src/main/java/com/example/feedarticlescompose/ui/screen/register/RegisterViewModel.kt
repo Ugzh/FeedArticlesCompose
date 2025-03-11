@@ -27,10 +27,14 @@ class RegisterViewModel @Inject constructor(
     var userMessageSharedFlow = _userMessageSharedFlow.asSharedFlow()
 
 
-    private var _isRegisterSharedFlow = MutableSharedFlow<Boolean>()
-    var isRegisterSharedFlow = _isRegisterSharedFlow.asSharedFlow()
+    private var _triggerNavigationToLogin = MutableSharedFlow<Boolean>()
+    var triggerNavigationToLogin = _triggerNavigationToLogin.asSharedFlow()
 
-    fun registerUser(login: String, password: String, confirmPassword: String){
+    fun registerUser(
+        login: String,
+        password: String,
+        confirmPassword: String
+    ){
         val trimLogin = login.trim()
         val trimPassword = password.trim()
         val trimConfirmPassword = confirmPassword.trim()
@@ -54,7 +58,7 @@ class RegisterViewModel @Inject constructor(
                                     200 -> {
                                         myPrefs.token = body!!.token
                                         myPrefs.userId = body.id
-                                        _isRegisterSharedFlow.emit(true)
+                                        _triggerNavigationToLogin.emit(true)
                                         R.string.account_created
                                     }
                                     303 -> R.string.login_already_used

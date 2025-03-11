@@ -62,6 +62,7 @@ fun AddArticleContent(
         getIdSelect = {
             categoryIdSelected = it
         },
+        defaultValueSelected = R.string.sport,
         buttonTitle = context.getString(R.string.register),
         onClickButton = {
             createArticle(

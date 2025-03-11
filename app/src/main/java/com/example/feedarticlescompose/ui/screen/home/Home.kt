@@ -244,9 +244,7 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel){
             vm.setNavigationToEdit()
         },
         refreshList = {
-            Log.d("test", "refresh")
             vm.getAllArticles()
-            Log.d("test", "refresh2")
         },
         onDelete = {vm.deleteArticle(it)}
     )

@@ -114,10 +114,10 @@ fun RegisterScreen(navController: NavController, vm: RegisterViewModel){
     }
 
     LaunchedEffect(key1 = true) {
-        vm.isRegisterSharedFlow.collect{
+        vm.triggerNavigationToLogin.collect{
             if(it)
                 navController.navigate(Screen.Home.route){
-                    popUpTo(Screen.Register.route){
+                    popUpTo(Screen.Login.route){
                         inclusive = true
                     }
                 }
