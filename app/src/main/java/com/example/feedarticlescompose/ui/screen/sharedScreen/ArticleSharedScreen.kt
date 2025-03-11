@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,6 +26,7 @@ import com.example.feedarticlescompose.R
 import com.example.feedarticlescompose.ui.sharedComponents.CategoryContent
 import com.example.feedarticlescompose.ui.sharedComponents.EditTextCustom
 import com.example.feedarticlescompose.ui.sharedComponents.ScreenTitleCustom
+import com.example.feedarticlescompose.ui.theme.BluePrimary
 
 @Composable
 fun ArticleSharedScreenContent(
@@ -47,7 +50,9 @@ fun ArticleSharedScreenContent(
 
     Box(
         contentAlignment = Alignment.TopCenter,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
     ){
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -95,7 +100,12 @@ fun ArticleSharedScreenContent(
                 getIdSelected = getIdSelect
             )
             Spacer(modifier = Modifier.size(20.dp))
-            Button(onClick = onClickButton) {
+            Button(
+                onClick = onClickButton,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = BluePrimary
+                )
+            ) {
                 Text(text = buttonTitle)
             }
         }

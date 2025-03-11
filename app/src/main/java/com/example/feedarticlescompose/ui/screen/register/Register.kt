@@ -1,6 +1,7 @@
 package com.example.feedarticlescompose.ui.screen.register
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,6 +29,7 @@ import com.example.feedarticlescompose.R
 import com.example.feedarticlescompose.ui.navigation.Screen
 import com.example.feedarticlescompose.ui.sharedComponents.EditTextCustom
 import com.example.feedarticlescompose.ui.sharedComponents.ScreenTitleCustom
+import com.example.feedarticlescompose.ui.theme.BluePrimary
 
 @Preview(showBackground = true)
 @Composable
@@ -50,7 +54,9 @@ fun RegisterContent(registerUser : (String, String, String) -> Unit){
 
     Box(
         contentAlignment =  Alignment.TopCenter,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
     ){
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
@@ -84,7 +90,12 @@ fun RegisterContent(registerUser : (String, String, String) -> Unit){
                     confirmPassword = it
                 }
             }
-            Button(onClick = { registerUser(login, password, confirmPassword) }) {
+            Button(
+                onClick = { registerUser(login, password, confirmPassword) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = BluePrimary
+                )
+            ) {
                 Text(text = context.getString(R.string.register))
             }
             Spacer(modifier = Modifier.size(1.dp))

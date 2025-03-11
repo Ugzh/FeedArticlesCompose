@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,6 +23,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.feedarticlescompose.R
+import com.example.feedarticlescompose.ui.theme.BluePrimary
 
 @Preview(showBackground = true)
 @Composable
@@ -63,6 +66,10 @@ fun CategoryContent(
             ) {
                 RadioButton(
                     selected = idString == selectedOption,
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = BluePrimary,
+                        unselectedColor = BluePrimary
+                    ),
                     onClick = null
                 )
                 Text(text = context.getString(idString))

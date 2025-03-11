@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
 import com.example.feedarticlescompose.ui.navigation.AppNav
 import com.example.feedarticlescompose.ui.theme.FeedArticlesComposeTheme
 import dagger.hilt.android.AndroidEntryPoint

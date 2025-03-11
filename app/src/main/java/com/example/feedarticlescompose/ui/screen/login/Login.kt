@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -58,7 +61,9 @@ fun LoginContent(
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxHeight()
+            modifier = Modifier
+                .fillMaxHeight()
+                .systemBarsPadding()
         ) {
             ScreenTitleCustom(
                 title = context.getString(R.string.sign_in)
@@ -81,7 +86,12 @@ fun LoginContent(
                 }
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Button(onClick = { loginUser(login, password) }) {
+                Button(
+                    onClick = { loginUser(login, password) },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BluePrimary
+                    )
+                    ) {
                     Text(text = context.getString(R.string.connect))
                 }
                 Spacer(modifier = Modifier.size(10.dp))

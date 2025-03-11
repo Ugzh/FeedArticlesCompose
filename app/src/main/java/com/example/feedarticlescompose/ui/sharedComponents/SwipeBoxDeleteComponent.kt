@@ -35,7 +35,6 @@ fun DeleteDismissBoxComponent(
                 }
                 SwipeToDismissBoxValue.StartToEnd -> false
                 SwipeToDismissBoxValue.Settled -> false
-                else -> return@rememberSwipeToDismissBoxState false
             }
         },
         positionalThreshold = { it * 0.25f}
@@ -49,6 +48,7 @@ fun DeleteDismissBoxComponent(
 
     SwipeToDismissBox(
         state = swipeState,
+        enableDismissFromStartToEnd = false,
         backgroundContent = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -67,7 +67,6 @@ fun DeleteDismissBoxComponent(
                 )
             }
         },
-        enableDismissFromStartToEnd = false,
     ) {
         content()
     }

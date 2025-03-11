@@ -2,6 +2,11 @@ package com.example.feedarticlescompose.ui.screen.home
 
 import android.util.Log
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,24 +20,33 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropUp
+import androidx.compose.material.icons.outlined.ArrowDropUp
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.PowerSettingsNew
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,9 +63,13 @@ import coil.compose.AsyncImage
 import com.example.feedarticlescompose.R
 import com.example.feedarticlescompose.network.dtos.article.ArticleDto
 import com.example.feedarticlescompose.ui.navigation.Screen
+import com.example.feedarticlescompose.ui.sharedComponents.ArticleItemExpandedContent
+import com.example.feedarticlescompose.ui.sharedComponents.ArticleItemWhenAuthorContent
 import com.example.feedarticlescompose.ui.sharedComponents.CategoryContent
 import com.example.feedarticlescompose.ui.sharedComponents.DeleteDismissBoxComponent
+import com.example.feedarticlescompose.ui.theme.BluePrimary
 import com.example.feedarticlescompose.utils.CategoryUtils
+import com.example.feedarticlescompose.utils.parsedDate
 
 @Preview(showBackground = true)
 @Composable
@@ -89,15 +107,15 @@ fun HomeContent(
     getIdArticleOnItemClicked: (Long) -> Unit
 ){
     val context = LocalContext.current
-    val radioListOptions = listOf(R.string.all, R.string.sport, R.string.manga, R.string.various)
-    val isRefreshing by remember {
-        mutableStateOf(false)
-    }
+    val isRefreshing by remember { mutableStateOf(false) }
+    var categorySelected by rememberSaveable { mutableIntStateOf(R.string.all) }
+    val pullToRefreshState = rememberPullToRefreshState()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
+            .systemBarsPadding()
     ){
        Column {
            Row(
@@ -128,10 +146,20 @@ fun HomeContent(
                horizontalAlignment = Alignment.CenterHorizontally,
            ) {
                PullToRefreshBox(
+                   state = pullToRefreshState,
                    isRefreshing = isRefreshing,
                    onRefresh = {
                        refreshList()
                    },
+                  indicator = {
+                      Indicator(
+                          modifier = Modifier.align(Alignment.TopCenter),
+                          isRefreshing = isRefreshing,
+                          containerColor = Color.White,
+                          color = BluePrimary,
+                          state = pullToRefreshState
+                      )
+                  },
                    modifier = Modifier.weight(1f)
                ) {
                    LazyColumn(
@@ -139,93 +167,22 @@ fun HomeContent(
                    ) {
                        items(items = listOfArticles){
                            if (it.idU == userId)
-                               DeleteDismissBoxComponent(
-                                   {
-                                       Log.d("test", "ici")
-                                       onDelete(it.id)
-                                   }
-                               ) {
-                                   Row(
-                                       verticalAlignment = Alignment.CenterVertically,
-                                       modifier = Modifier
-                                           .padding(vertical = 5.dp)
-                                           .clickable {
-                                               getIdArticleOnItemClicked(it.id)
-                                           }
-                                           .border(
-                                               BorderStroke(1.dp, Color.Black),
-                                               shape = RoundedCornerShape(10.dp)
-                                           )
-                                           .background(
-                                               CategoryUtils.getColor(it.categorie),
-                                               shape = RoundedCornerShape(10.dp)
-                                           )
-                                           .fillMaxWidth()
-                                           .padding(10.dp)
-
-                                   ) {
-                                       AsyncImage(
-                                           model = it.urlImage,
-                                           contentDescription = it.titre,
-                                           contentScale = ContentScale.FillHeight,
-                                           error = painterResource(id = R.drawable.feedarticles_logo),
-                                           modifier = Modifier
-                                               .size(50.dp)
-                                               .clip(CircleShape)
-                                               .border(
-                                                   BorderStroke(1.dp, Color.Gray),
-                                                   CircleShape
-                                               )
-                                       )
-                                       Text(
-                                           text = it.titre,
-                                           maxLines = 2,
-                                           overflow = TextOverflow.Ellipsis,
-                                           modifier = Modifier.padding(10.dp)
-                                       )
-                                   }
-                               }
+                               ArticleItemWhenAuthorContent(
+                                   it,
+                                   onDelete,
+                                   getIdArticleOnItemClicked
+                               )
                            else
-                               Row(
-                                   verticalAlignment = Alignment.CenterVertically,
-                                   modifier = Modifier
-                                       .padding(vertical = 5.dp)
-                                       .border(
-                                           BorderStroke(1.dp, Color.Black),
-                                           shape = RoundedCornerShape(10.dp)
-                                       )
-                                       .background(
-                                           CategoryUtils.getColor(it.categorie),
-                                           shape = RoundedCornerShape(10.dp)
-                                       )
-                                       .fillMaxWidth()
-                                       .padding(10.dp)
+                               ArticleItemExpandedContent(it)
 
-                               ) {
-                                   AsyncImage(
-                                       model = it.urlImage,
-                                       contentDescription = it.titre,
-                                       contentScale = ContentScale.FillHeight,
-                                       error = painterResource(id = R.drawable.feedarticles_logo),
-                                       modifier = Modifier
-                                           .size(50.dp)
-                                           .clip(CircleShape)
-                                           .border(
-                                               BorderStroke(1.dp, Color.Gray),
-                                               CircleShape
-                                           )
-                                   )
-                                   Text(
-                                       text = it.titre,
-                                       maxLines = 2,
-                                       overflow = TextOverflow.Ellipsis,
-                                       modifier = Modifier.padding(10.dp)
-                                   )
-                               }
                        }
                    }
                }
-               CategoryContent(radioListOptions, defaultValue = R.string.all){
+               CategoryContent(
+                   CategoryUtils.listOfCategoriesAndAll,
+                   defaultValue = categorySelected
+               ){
+                   categorySelected = it
                    getCategoryClicked(it)
                }
            }
@@ -287,7 +244,9 @@ fun HomeScreen(navController: NavController, vm: HomeViewModel){
             vm.setNavigationToEdit()
         },
         refreshList = {
+            Log.d("test", "refresh")
             vm.getAllArticles()
+            Log.d("test", "refresh2")
         },
         onDelete = {vm.deleteArticle(it)}
     )

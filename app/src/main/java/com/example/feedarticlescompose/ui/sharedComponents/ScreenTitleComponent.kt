@@ -26,6 +26,6 @@ fun ScreenTitleCustom(
         color = BluePrimary,
         fontSize = 22.sp,
         fontWeight = FontWeight.Bold,
-        modifier = modifier.padding(vertical = 10.dp)
+        modifier = modifier.padding(vertical = 20.dp)
     )
 }

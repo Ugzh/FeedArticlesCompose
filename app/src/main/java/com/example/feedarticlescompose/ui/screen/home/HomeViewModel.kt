@@ -80,11 +80,13 @@ class HomeViewModel @Inject constructor(
                             when(response.code()){
                                 200 -> {
                                     if(categorySelected != 0){
+
                                         _articlesListStateFlow.value = body!!.filter {
                                           it.categorie == categorySelected
                                         }
-                                    } else
+                                    } else {
                                         _articlesListStateFlow.value = body!!
+                                    }
                                     _articles.addAll(body)
                                 }
                                 400 ,401 -> {
