@@ -42,7 +42,7 @@ fun EditArticleContent(
         CategoryUtils.getCategoryByNumber(article.categorie)
 
     ArticleSharedScreenContent(
-        titleScreen = context.getString(R.string.update),
+        titleScreen = context.getString(R.string.edit),
         articleTitle = articleTitle,
         articleTitleLabel = context.getString(R.string.title),
         onArticleTitleChange = {
@@ -64,7 +64,7 @@ fun EditArticleContent(
             categoryIdSelected = it
         },
         defaultValueSelected = categoryIdSelected,
-        buttonTitle = context.getString(R.string.update),
+        buttonTitle = context.getString(R.string.edit),
         onClickButton = {
             updateArticle(
                 articleTitle,

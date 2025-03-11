@@ -111,7 +111,7 @@ class EditArticleViewModel @Inject constructor(
                                     R.string.article_updated
                                 }
                                 303 -> R.string.article_not_created
-                                304 -> R.string.fields_are_same
+                                304 -> R.string.article_content_same
                                 400 -> R.string.check_all_fields
                                 401 -> R.string.please_logout
                                 503 -> R.string.error_from_database

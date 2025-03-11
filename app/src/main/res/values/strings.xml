@@ -1,19 +1,16 @@
 <resources>
     <string name="app_name" translatable="false">FeedArticleJetpack</string>
     <string name="app_title" translatable="false">Feed Articles</string>
-    <string name="login" translatable="false">Login</string>
+    <string name="login">Login</string>
     <string name="sign_in">sign in</string>
-    <string name="password" translatable="false">Password</string>
-    <string name="confirm_password" translatable="false">Confirm password</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
     <string name="connect">connect</string>
     <string name="no_account_create_here">No account ? Create here !</string>
     <string name="no_response_database">No response database</string>
     <string name="internal_problem">Internal problem, you need to fill fields again</string>
     <string name="wrong_informations">Wrong informations, check fields</string>
     <string name="error_from_database">Error from database, please retry in few minutes</string>
-    <string name="error_from_database_redirection">
-        Error from database, we need to disconnected us, please retry in few minutes
-    </string>
     <string name="fill_fields">Please fill all fields</string>
     <string name="password_not_match">Passwords doesn\'t match</string>
     <string name="new_account">New Account</string>
@@ -35,24 +32,19 @@
     <string name="article_created">Article has been created</string>
     <string name="article_updated">Article has been updated</string>
     <string name="article_not_created">Article has not been created</string>
-    <string name="fields_are_same">
-        Fields have not been modified, article has not been updated</string>
     <string name="article_not_found">Article not found</string>
     <string name="article_not_updated">Article has not been updated</string>
     <string name="article_content_same">Content is same, so article has not been updated</string>
     <string name="all">All</string>
     <string name="details_article">Details Article</string>
     <string name="back">Back</string>
-    <string name="category_type">Cat. %s</string>
+    <string name="category_type" translatable="false">Cat. %s</string>
     <string name="image_of">Image who illustrate the title of article : %s</string>
     <string name="created_at">On %s</string>
-    <string name="add_to_favorite">Has been added to favorite</string>
-    <string name="add">Add article</string>
-    <string name="remove_to_favorite">Has been removed to favorite</string>
-    <string name="status_not_changed">Status not changed</string>
-    <string name="edit_article">Edit Article</string>
-    <string name="delete">Delete</string>
-    <string name="update">Update</string>
+    <string name="error_from_database_redirection">error from database</string>
+    <string name="article_not_deleted">Article has been not deleted</string>
     <string name="article_deleted">Article has been deleted</string>
-    <string name="article_not_deleted">Article has not been deleted</string>
+    <string name="edit">Edit</string>
+    <string name="add">add</string>
+    <string name="delete">delete</string>
 </resources>
